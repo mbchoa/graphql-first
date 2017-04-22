@@ -1,4 +1,6 @@
 const { graphql, buildSchema } = require('graphql');
+const express = require('express');
+const graphqlMiddleware = require('express-graphql');
 
 const schema = buildSchema(`
     type Query {
@@ -12,6 +14,11 @@ const root = {
     },
 };
 
-graphql(schema, '{ hello }', root).then(response => {
-    console.log(response);
-});
+const app = express();
+app.use('/graphql', graphqlMiddleware({
+    schema,
+    rootValue: root,
+    graphiql: true
+}));
+
+app.listen(4000, () => console.log('Running GraphQL server at port localhost:4000/graphql'));
