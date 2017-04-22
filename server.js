@@ -8,6 +8,7 @@ const schema = buildSchema(`
         quoteOfTheDay: String
         random: Float!
         rollThreeDice: [Int]
+        rollDice(numDice: Int!, numSides: Int): [Int]
     }
 `);
 
@@ -24,6 +25,13 @@ const root = {
     rollThreeDice () {
         return [1, 1, 1]
             .map(dice => Math.floor(Math.random() * 6) + 1);
+    },
+    rollDice ({ numDice, numSides}) {
+        const output = [];
+        for (let i = 0; i < numDice; i++) {
+            output.push(1 + Math.floor(Math.random() * (numSides || 6)));
+        }
+        return output;
     }
 };
 
