@@ -1,0 +1,12 @@
+{
+  "name": "graphql-first",
+  "version": "1.0.0",
+  "description": "Getting started with GraphQL",
+  "main": "index.js",
+  "repository": "git@github.com:mbchoa/graphql-first.git",
+  "author": "Michael-Bryant Choa <mbchoa@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "graphql": "^0.9.3"
+  }
+}
