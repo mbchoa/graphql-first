@@ -5,6 +5,9 @@ const graphqlMiddleware = require('express-graphql');
 const schema = buildSchema(`
     type Query {
         hello: String
+        quoteOfTheDay: String
+        random: Float!
+        rollThreeDice: [Int]
     }
 `);
 
@@ -12,6 +15,16 @@ const root = {
     hello () {
         return 'Hello World';
     },
+    quoteOfTheDay () {
+        return 'Never give up!';
+    },
+    random () {
+        return Math.random();
+    },
+    rollThreeDice () {
+        return [1, 1, 1]
+            .map(dice => Math.floor(Math.random() * 6) + 1);
+    }
 };
 
 const app = express();
