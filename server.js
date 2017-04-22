@@ -1,14 +1,22 @@
 const { graphql, buildSchema } = require('graphql');
 const express = require('express');
 const graphqlMiddleware = require('express-graphql');
+const RandomDie = require('./RandomDie');
 
 const schema = buildSchema(`
+    type RandomDie {
+        numSides: Int!,
+        numDice: Int!,
+        rollOnce: Int!,
+        roll(numRolls: Int!): [Int]
+    }
     type Query {
         hello: String
         quoteOfTheDay: String
         random: Float!
         rollThreeDice: [Int]
         rollDice(numDice: Int!, numSides: Int): [Int]
+        getDie(numSides: Int!): RandomDie
     }
 `);
 
@@ -32,6 +40,9 @@ const root = {
             output.push(1 + Math.floor(Math.random() * (numSides || 6)));
         }
         return output;
+    },
+    getDie ({ numSides }) {
+        return new RandomDie(numSides || 6);
     }
 };
 
