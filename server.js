@@ -2,6 +2,7 @@ const { graphql, buildSchema } = require('graphql');
 const express = require('express');
 const graphqlMiddleware = require('express-graphql');
 const RandomDie = require('./RandomDie');
+const Message = require('./Message');
 
 const schema = buildSchema(`
     type RandomDie {
@@ -10,6 +11,23 @@ const schema = buildSchema(`
         rollOnce: Int!,
         roll(numRolls: Int!): [Int]
     }
+
+    input MessageInput {
+        content: String
+        author: String
+    }
+
+    type Message {
+        id: ID!
+        content: String
+        author: String
+    }
+
+    type Mutation {
+        createMessage(input: MessageInput): Message
+        updateMessage(id: ID!, input: MessageInput): Message
+    }
+
     type Query {
         hello: String
         quoteOfTheDay: String
@@ -17,8 +35,12 @@ const schema = buildSchema(`
         rollThreeDice: [Int]
         rollDice(numDice: Int!, numSides: Int): [Int]
         getDie(numSides: Int!): RandomDie
+        getMessage(id: ID!): Message
+        getAllMessages: [Message]
     }
 `);
+
+var fakeDb = {};
 
 const root = {
     hello () {
@@ -43,6 +65,36 @@ const root = {
     },
     getDie ({ numSides }) {
         return new RandomDie(numSides || 6);
+    },
+    setMessage ({ message }) {
+        fakeDb.message = message;
+        return message;
+    },
+    getMessage ({ id }) {
+        if (!fakeDb[id]) {
+            throw new Error('no message exists with id ' + id);
+        }
+        return new Message(id, fakeDb[id]);
+    },
+    getAllMessages () {
+        const output = [];
+        for (let id in fakeDb) {
+            output.push(new Message(id, fakeDb[id]));
+        }
+        console.log(output);
+        return output;
+    },
+    createMessage ({ input }) {
+        var id = Math.floor(Math.random() * 100);
+        fakeDb[id] = input;
+        return new Message(id, input);
+    },
+    updateMessage ({ id, input }) {
+        if (!fakeDb[id]) {
+            throw new Error('no message exists with id ' + id);
+        }
+        fakeDb[id] = input;
+        return new Message(id, input);
     }
 };
 
